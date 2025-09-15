@@ -1,4 +1,4 @@
-<!-- Mount point (Weebly embed) -->
+<!-- Mount point -->
 <div id="teaching-course-uz"></div>
 
 <script>
@@ -13,9 +13,9 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
 
     :host, .app {
-      --ink: #141116;      /* text & icons */
-      --accent: #F7941E;   /* CTA, ring fill, progress fill */
-      --muted: #C8C5C4;    /* borders, muted text, tracks */
+      --ink: #141116;
+      --accent: #F7941E;
+      --muted: #C8C5C4;
       --bg: #ffffff;
       --radius: 16px;
       --shadow: 0 6px 24px rgba(20,17,22,.08);
@@ -28,7 +28,8 @@
     }
     a,button{cursor:pointer; border:0; background:none; color:inherit; font:inherit}
 
-    header{position:sticky; top:0; z-index:10; background:var(--bg); border-bottom:1px solid var(--muted); margin-bottom:24px}
+    /* Was sticky before; now normal so it scrolls away */
+    header{position: static; top:auto; background:var(--bg); border-bottom:1px solid var(--muted); margin-bottom:24px}
     .wrap{max-width:1200px; margin:0 auto; padding:12px 20px}
 
     /* Topbar */
@@ -57,7 +58,7 @@
     .hero{padding:28px 20px 24px; max-width:1200px; margin:0 auto}
     .first-callout{
       border:1px solid var(--muted); border-radius:var(--radius); background:var(--bg);
-      padding:22px; min-height:120px;
+      padding:26px; min-height:132px;
       display:flex; align-items:center; justify-content:space-between; gap:18px; box-shadow:var(--shadow)
     }
     .first-title{font-size:18px; font-weight:700; margin:0}
@@ -125,25 +126,25 @@
           <div id="overallCount" class="overall-count">0/10 tugallandi</div>
         </div>
       </div>
-
-      <!-- Qayerda to‘xtagan edim -->
-      <div class="hero">
-        <div class="first-callout">
-          <div>
-            <p class="first-title" id="resumeTitle">Dars 01: Kursga kirish va qanday ishlaydi</p>
-            <p class="first-desc" id="resumeDesc">
-              Nimalarni o‘rganasiz, taraqqiyot qanday saqlanadi (ushbu qurilmada mahalliy), va muvaffaqiyat uchun tezkor maslahatlar.
-            </p>
-          </div>
-          <button id="resumeBtn" class="btn" aria-label="Oxirgi boshlangan darsni davom ettirish">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-              <path d="M8 5v14l11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-            <span id="resumeLabel">Davom etish</span> <!-- stays fixed -->
-          </button>
-        </div>
-      </div>
-      <div class="after-hero-space"></div>
     </header>
+
+    <!-- Qayerda to‘xtagan edim (kept outside header; but header isn't sticky anyway) -->
+    <div class="hero">
+      <div class="first-callout">
+        <div>
+          <p class="first-title" id="resumeTitle">Dars 01: Kursga kirish va qanday ishlaydi</p>
+          <p class="first-desc" id="resumeDesc">
+            Nimalarni o‘rganasiz, taraqqiyot qanday saqlanadi (ushbu qurilmada mahalliy), va muvaffaqiyat uchun tezkor maslahatlar.
+          </p>
+        </div>
+        <button id="resumeBtn" class="btn" aria-label="Oxirgi boshlangan darsni davom ettirish">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M8 5v14l11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span id="resumeLabel">Davom etish</span> <!-- stays fixed -->
+        </button>
+      </div>
+    </div>
+    <div class="after-hero-space"></div>
 
     <main>
       <div id="menu"></div>
@@ -177,7 +178,7 @@
     { id:10, title:"Yakuniy loyiha va refleksiya", time:40, summary:"Bir darsni to‘liq loyihalash, baholash rejasi va refleksiya." }
   ];
 
-  var COURSE_KEY = "teaching_course_uz_nav_zoom_v1";
+  var COURSE_KEY = "teaching_course_uz_nav_zoom_nosticky_v1";
   var state = (function(){
     try {
       var obj = JSON.parse(localStorage.getItem(COURSE_KEY)) || { pct:{}, last:null };
