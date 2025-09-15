@@ -3,7 +3,7 @@
 
 <script>
 (function () {
-  // Shadow DOM
+  // Shadow DOM (isolates from Weebly/GitHub CSS)
   var host = document.getElementById('teaching-course-uz');
   if (!host) { host = document.createElement('div'); host.id = 'teaching-course-uz'; document.currentScript.before(host); }
   var root = host.attachShadow({ mode: 'open' });
@@ -13,12 +13,14 @@
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap');
 
     :host, .app {
-      --ink: #141116;
-      --accent: #F7941E;
-      --muted: #C8C5C4;
+      --ink: #141116;      /* text & icons */
+      --accent: #F7941E;   /* CTA, ring fill, progress fill */
+      --muted: #C8C5C4;    /* borders, muted text, tracks */
       --bg: #ffffff;
       --radius: 16px;
       --shadow: 0 6px 24px rgba(20,17,22,.08);
+      --done-text: #22C55E;   /* light green */
+      --done-border: #86EFAC; /* light green border */
     }
 
     *{box-sizing:border-box}
@@ -28,8 +30,8 @@
     }
     a,button{cursor:pointer; border:0; background:none; color:inherit; font:inherit}
 
-    /* Was sticky before; now normal so it scrolls away */
-    header{position: static; top:auto; background:var(--bg); border-bottom:1px solid var(--muted); margin-bottom:24px}
+    /* Header: not sticky; no border (so no line above the tab) */
+    header{position: static; top:auto; background:var(--bg); border-bottom:none; margin-bottom:0}
     .wrap{max-width:1200px; margin:0 auto; padding:12px 20px}
 
     /* Topbar */
@@ -54,7 +56,7 @@
     .ring span{font-size:18px}
     .overall-count{font-weight:900; color:var(--ink)}
 
-    /* Resume (“where I left”) — extra padding + taller */
+    /* "Where I left" tab — extra padding + taller */
     .hero{padding:28px 20px 24px; max-width:1200px; margin:0 auto}
     .first-callout{
       border:1px solid var(--muted); border-radius:var(--radius); background:var(--bg);
@@ -65,10 +67,24 @@
     .first-desc{opacity:.8; margin:8px 0 0; max-width:800px}
     .btn{display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border-radius:999px;
       border:1px solid var(--accent); background:var(--accent); color:#fff; box-shadow:var(--shadow); font-weight:900}
-    .after-hero-space{height:32px}
+
+    /* Divider + view toggle bar (line is here, BELOW the tab) */
+    .toolbar{
+      max-width:1200px; margin:16px auto 16px; padding:8px 20px 0;
+      border-top:1px solid var(--muted);
+      display:flex; align-items:center; justify-content:flex-end; gap:8px;
+    }
+    .view-toggle{display:inline-flex; gap:8px}
+    .icon-btn{
+      width:40px; height:36px; border-radius:10px; display:inline-grid; place-items:center;
+      border:1px solid var(--muted); background:#fff; box-shadow:var(--shadow);
+    }
+    .icon-btn[aria-pressed="true"]{ outline:2px solid var(--accent); outline-offset:2px }
+    .icon{display:block}
 
     main{max-width:1200px; margin:0 auto; padding:0 20px 40px}
-    /* More space among lessons */
+
+    /* Card grid view */
     .grid{display:grid; gap:20px; grid-template-columns:repeat(12,1fr)}
     @media (max-width:1050px){.grid{grid-template-columns:repeat(8,1fr)}}
     @media (max-width:720px){.grid{grid-template-columns:repeat(4,1fr)}}
@@ -82,9 +98,16 @@
     .card:hover .cover-img{transform: scale(1.06)}
     .cover::after{content:""; position:absolute; inset:0; background: rgba(20,17,22,.20)} /* readability overlay */
 
-    /* Badge */
-    .badge{position:absolute; top:12px; left:12px; padding:8px 14px; border-radius:999px; font-size:18px;
-      font-weight:900; background:rgba(255,255,255,.92); border:1px solid var(--muted); color:var(--ink)}
+    /* Badge (lesson number in cover) */
+    .badge{
+      position:absolute; top:12px; left:12px; padding:8px 14px; border-radius:999px; font-size:18px;
+      font-weight:900; background:rgba(255,255,255,.92); border:1px solid var(--muted); color:var(--ink)
+    }
+    /* When lesson fully completed (100%), tint number to light green */
+    .badge--done{
+      color: var(--done-text);
+      border-color: var(--done-border);
+    }
 
     .body{padding:14px 16px 16px; display:flex; flex-direction:column; gap:8px; flex:1}
     .title{font-weight:500; font-size:18px; margin:0 0 2px}         /* not bold */
@@ -101,6 +124,40 @@
     .progress{flex:1; height:10px; background:var(--muted); border-radius:999px; overflow:hidden; cursor:pointer}
     .progress > i{display:block; height:100%; width:0%; background:var(--accent); transition:width .2s ease}
     .pct{min-width:44px; text-align:right; font-weight:400; color:var(--ink)} /* not bold */
+
+    /* LIST VIEW (no cover images) */
+    .list{display:flex; flex-direction:column; gap:12px}
+    .list-item{
+      display:grid; grid-template-columns: auto 1fr auto; gap:20px; align-items:center;   /* more gap */
+      border:1px solid var(--muted); border-radius:14px; background:#fff; box-shadow:var(--shadow);
+      padding:12px 14px;
+    }
+    .li-num{
+      min-width:88px; text-align:center; font-weight:800; border:1px solid var(--muted);
+      border-radius:999px; padding:6px 10px; background:#fff;
+    }
+    /* Done tint for list number */
+    .li-num--done{
+      color: var(--done-text);
+      border-color: var(--done-border);
+    }
+
+    .li-main{display:flex; flex-direction:column; gap:4px; padding-left:6px} /* shift right */
+    .li-title{font-size:18px; font-weight:500; margin:0}
+    .li-desc{font-size:14px; opacity:.9; margin:0}
+    .li-right{display:flex; flex-direction:column; gap:8px; align-items:flex-end; justify-content:center; min-width:220px}
+    .li-chip{display:inline-flex; align-items:center; gap:6px; font-size:12px; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--muted); color:var(--ink); background:#fff; opacity:.9}
+    .li-progress{display:flex; align-items:center; gap:8px; width:100%; min-width:200px}
+    .li-progress .bar{flex:1; height:8px; background:var(--muted); border-radius:999px; overflow:hidden; cursor:pointer}
+    .li-progress .bar > i{display:block; height:100%; width:0%; background:var(--accent); transition:width .2s ease}
+    .li-progress .pct{min-width:36px; text-align:right; font-weight:400}
+    .li-btn{display:inline-flex; align-items:center; gap:8px; padding:8px 12px; border-radius:10px;
+      border:1px solid var(--accent); background:var(--accent); color:#fff; font-weight:800}
+    @media (max-width:820px){
+      .list-item{grid-template-columns: 1fr; align-items:flex-start}
+      .li-right{align-items:stretch; min-width:0}
+    }
   </style>
 
   <div class="app" lang="uz">
@@ -128,7 +185,7 @@
       </div>
     </header>
 
-    <!-- Qayerda to‘xtagan edim (kept outside header; but header isn't sticky anyway) -->
+    <!-- "Where I left" tab -->
     <div class="hero">
       <div class="first-callout">
         <div>
@@ -140,15 +197,33 @@
         <button id="resumeBtn" class="btn" aria-label="Oxirgi boshlangan darsni davom ettirish">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M8 5v14l11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
-          <span id="resumeLabel">Davom etish</span> <!-- stays fixed -->
+          <span id="resumeLabel">Davom etish</span>
         </button>
       </div>
     </div>
-    <div class="after-hero-space"></div>
+
+    <!-- Divider + view toggle -->
+    <div class="toolbar">
+      <div class="view-toggle" role="group" aria-label="Ko‘rinishni almashtirish">
+        <button id="gridBtn" class="icon-btn" aria-pressed="true" title="Kartalar ko‘rinishi">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="4" y="4" width="7" height="7" stroke="currentColor" stroke-width="2"></rect>
+            <rect x="13" y="4" width="7" height="7" stroke="currentColor" stroke-width="2"></rect>
+            <rect x="4" y="13" width="7" height="7" stroke="currentColor" stroke-width="2"></rect>
+            <rect x="13" y="13" width="7" height="7" stroke="currentColor" stroke-width="2"></rect>
+          </svg>
+        </button>
+        <button id="listBtn" class="icon-btn" aria-pressed="false" title="Ruyxat ko‘rinishi">
+          <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
 
     <main>
       <div id="menu"></div>
-      <section class="grid" id="lessonGrid" aria-label="Kurs darslari"></section>
+      <section id="contentArea" aria-label="Kurs darslari"></section>
     </main>
   </div>
   `;
@@ -156,7 +231,7 @@
   // ---------- App logic ----------
   var $ = (sel, n) => (n||root).querySelector(sel);
 
-  // Cover image sources
+  // Cover image sources for CARD view
   var coverImages = [
     "https://raw.githubusercontent.com/ik3057823-ops/image2/refs/heads/main/anishia-davis-876169_1280.jpg",
     "https://raw.githubusercontent.com/ik3057823-ops/image3/refs/heads/main/child-6080185_1280.jpg",
@@ -178,26 +253,27 @@
     { id:10, title:"Yakuniy loyiha va refleksiya", time:40, summary:"Bir darsni to‘liq loyihalash, baholash rejasi va refleksiya." }
   ];
 
-  var COURSE_KEY = "teaching_course_uz_nav_zoom_nosticky_v1";
+  var COURSE_KEY = "teaching_course_uz_view_toggle_badge_done_both_v1";
   var state = (function(){
     try {
-      var obj = JSON.parse(localStorage.getItem(COURSE_KEY)) || { pct:{}, last:null };
+      var obj = JSON.parse(localStorage.getItem(COURSE_KEY)) || { pct:{}, last:null, view:"grid" };
       if (!obj.pct) obj.pct = {};
+      if (!obj.view) obj.view = "grid";
       return obj;
-    } catch(e){ return { pct:{}, last:null }; }
+    } catch(e){ return { pct:{}, last:null, view:"grid" }; }
   })();
 
+  function saveState(){ localStorage.setItem(COURSE_KEY, JSON.stringify(state)); }
   function getPct(id){ return state.pct[id] || 0; }
   function setPct(id, value){
     state.pct[id] = value;
     if (value > 0) state.last = { id:id, t: Date.now() };
-    localStorage.setItem(COURSE_KEY, JSON.stringify(state));
+    saveState();
     updateRing();
     updateResumeInfoOnly(); // do NOT change resume button label
   }
   function labelForPct(v){ return v >= 100 ? "Takrorlash" : (v > 0 ? "Davom etish" : "Boshlash"); }
   function completedCount(){ return lessons.filter(l => getPct(l.id) === 100).length; }
-
   function getResumeLesson(){
     if (state.last && typeof state.last.id === 'number') {
       var found = lessons.find(x => x.id === state.last.id);
@@ -217,14 +293,25 @@
     overallCount.textContent = done + '/' + lessons.length + ' tugallandi';
     try { document.title = 'Samarali o‘qitish asoslari — ' + done + '/' + lessons.length + ' tugallandi'; } catch(e){}
   }
-
   function updateResumeInfoOnly(){
     var r = getResumeLesson();
     $('#resumeTitle').textContent = 'Dars ' + String(r.id).padStart(2,'0') + ': ' + r.title;
     $('#resumeDesc').textContent = r.summary;
-    // #resumeLabel remains "Davom etish"
   }
 
+  // Helpers to tint "done" state in both views
+  function updateBadgeTint(badgeEl, pct){
+    if (!badgeEl) return;
+    if (pct === 100) { badgeEl.classList.add('badge--done'); badgeEl.setAttribute('title', 'Tugallandi'); }
+    else { badgeEl.classList.remove('badge--done'); badgeEl.removeAttribute('title'); }
+  }
+  function updateListNumTint(liNumEl, pct){
+    if (!liNumEl) return;
+    if (pct === 100) { liNumEl.classList.add('li-num--done'); liNumEl.setAttribute('title', 'Tugallandi'); }
+    else { liNumEl.classList.remove('li-num--done'); liNumEl.removeAttribute('title'); }
+  }
+
+  // ---- Renderers
   function createCard(l, index){
     var card = document.createElement('article');
     card.className = 'card';
@@ -233,14 +320,17 @@
     var pct = getPct(l.id);
     var coverUrl = coverImages[index % coverImages.length];
 
-    // Cover with inner .cover-img for zoom
+    // Cover
     var cover = document.createElement('div');
     cover.className = 'cover';
     cover.innerHTML = `
       <div class="cover-img" style="background-image:url('${coverUrl}')"></div>
       <div class="badge">Dars ${String(l.id).padStart(2,'0')}</div>
     `;
+    var badge = null;
     card.appendChild(cover);
+    badge = cover.querySelector('.badge');
+    updateBadgeTint(badge, pct);
 
     // Body
     var body = document.createElement('div');
@@ -271,29 +361,26 @@
     `;
     card.appendChild(body);
 
-    // Wire up (card-only state changes)
+    // Interactions
     var bar = body.querySelector('[data-bar] > i');
     var pctLabel = body.querySelector('[data-pct]');
-    var progressWrap = body.querySelector('[data-progress-wrap]');
     var startBtn = body.querySelector('[data-start]');
     var startLbl = body.querySelector('[data-start-label]');
+    var progressWrap = body.querySelector('[data-progress-wrap]');
 
     function setAndRender(v){
-      setPct(l.id, v);                 // updates ring & resume info (NOT resume label)
+      setPct(l.id, v);
       bar.style.width = v + '%';
       pctLabel.textContent = v + '%';
       startLbl.textContent = labelForPct(v);
+      updateBadgeTint(badge, v);  // update badge color on change
     }
-
-    // Button: Boshlash → Davom etish → Takrorlash, then navigate to /dars.html
     startBtn.addEventListener('click', function(){
       var cur = getPct(l.id);
       var next = (cur === 0) ? 50 : (cur === 50) ? 100 : 100;
       setAndRender(next);
       try { window.location.href = "https://t4uzb.weebly.com/dars.html"; } catch(e){}
     });
-
-    // Progress bar click cycles 0 → 50 → 100 → 0
     progressWrap.addEventListener('click', function(){
       var cur = getPct(l.id);
       var next = (cur === 0) ? 50 : (cur === 50) ? 100 : 0;
@@ -303,26 +390,113 @@
     return card;
   }
 
+  function createListItem(l){
+    var item = document.createElement('div');
+    item.className = 'list-item';
+    item.id = 'lesson-' + l.id;
+
+    var pct = getPct(l.id);
+
+    item.innerHTML = `
+      <div class="li-num">Dars ${String(l.id).padStart(2,'0')}</div>
+      <div class="li-main">
+        <h4 class="li-title">Dars ${String(l.id).padStart(2,'0')}<span class="sep">:</span> ${l.title}</h4>
+        <p class="li-desc">${l.summary}</p>
+      </div>
+      <div class="li-right">
+        <div class="li-chip" title="Taxminiy vaqt">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="2"/>
+            <path d="M12 6v6l4 2" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+          ~${l.time} daq
+        </div>
+        <div class="li-progress" data-li-progress>
+          <div class="bar" data-bar><i style="width:${pct}%"></i></div>
+          <div class="pct" data-pct>${pct}%</div>
+        </div>
+        <button class="li-btn" data-start aria-label="Darsni boshlash yoki davom ettirish">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M8 5v14l11-7-11-7z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg>
+          <span data-start-label>${labelForPct(pct)}</span>
+        </button>
+      </div>
+    `;
+
+    var liNum = item.querySelector('.li-num');
+    updateListNumTint(liNum, pct);
+
+    // Interactions
+    var bar = item.querySelector('[data-bar] > i');
+    var pctLabel = item.querySelector('[data-pct]');
+    var startBtn = item.querySelector('[data-start]');
+    var startLbl = item.querySelector('[data-start-label]');
+    var progressWrap = item.querySelector('[data-li-progress]');
+
+    function setAndRender(v){
+      setPct(l.id, v);
+      bar.style.width = v + '%';
+      pctLabel.textContent = v + '%';
+      startLbl.textContent = labelForPct(v);
+      updateListNumTint(liNum, v); // update list pill color on change
+    }
+    startBtn.addEventListener('click', function(){
+      var cur = getPct(l.id);
+      var next = (cur === 0) ? 50 : (cur === 50) ? 100 : 100;
+      setAndRender(next);
+      try { window.location.href = "https://t4uzb.weebly.com/dars.html"; } catch(e){}
+    });
+    progressWrap.addEventListener('click', function(){
+      var cur = getPct(l.id);
+      var next = (cur === 0) ? 50 : (cur === 50) ? 100 : 0;
+      setAndRender(next);
+    });
+
+    return item;
+  }
+
   function render(){
-    var grid = $('#lessonGrid');
-    grid.innerHTML = '';
-    lessons.sort((a,b)=>a.id-b.id).forEach((l, i)=> grid.appendChild(createCard(l, i)));
+    var area = $('#contentArea');
+    area.innerHTML = '';
+    if (state.view === 'grid') {
+      var grid = document.createElement('section');
+      grid.className = 'grid';
+      lessons.slice().sort((a,b)=>a.id-b.id).forEach((l, i)=> grid.appendChild(createCard(l, i)));
+      area.appendChild(grid);
+      $('#gridBtn').setAttribute('aria-pressed', 'true');
+      $('#listBtn').setAttribute('aria-pressed', 'false');
+    } else {
+      var list = document.createElement('section');
+      list.className = 'list';
+      lessons.slice().sort((a,b)=>a.id-b.id).forEach((l)=> list.appendChild(createListItem(l)));
+      area.appendChild(list);
+      $('#gridBtn').setAttribute('aria-pressed', 'false');
+      $('#listBtn').setAttribute('aria-pressed', 'true');
+    }
     updateRing();
     updateResumeInfoOnly();
   }
 
-  // Resume button: scroll only; label stays; no state change
+  // View toggles
+  $('#gridBtn').addEventListener('click', function(){
+    state.view = 'grid'; saveState(); render();
+  });
+  $('#listBtn').addEventListener('click', function(){
+    state.view = 'list'; saveState(); render();
+  });
+
+  // Resume button: scroll to last lesson only; label stays; no state change
   $('#resumeBtn').addEventListener('click', function(){
     var r = getResumeLesson();
     var el = root.getElementById('lesson-' + r.id);
     if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
-  // Kurslarga qaytish → go to kurslar.html
+  // Kurslarga qaytish
   $('#backBtn').addEventListener('click', function(){
     try { window.location.href = "https://t4uzb.weebly.com/kurslar.html"; } catch(e){}
   });
 
+  // Initial render
   render();
 })();
 </script>
