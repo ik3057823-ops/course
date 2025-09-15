@@ -53,7 +53,7 @@
     .ring span{font-size:18px}
     .overall-count{font-weight:900; color:var(--ink)}
 
-    /* Resume (“where I left”) — more padding + taller */
+    /* Resume (“where I left”) — extra padding + taller */
     .hero{padding:28px 20px 24px; max-width:1200px; margin:0 auto}
     .first-callout{
       border:1px solid var(--muted); border-radius:var(--radius); background:var(--bg);
@@ -105,10 +105,10 @@
   <div class="app" lang="uz">
     <header>
       <div class="wrap topbar">
-        <button id="backBtn" class="back-btn" aria-label="Menyuga qaytish">
+        <button id="backBtn" class="back-btn" aria-label="Kurslarga qaytish">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Menyuga qaytish
+          Kurslarga qaytish
         </button>
       </div>
 
@@ -289,7 +289,6 @@
       var cur = getPct(l.id);
       var next = (cur === 0) ? 50 : (cur === 50) ? 100 : 100;
       setAndRender(next);
-      // Navigate to lesson page
       try { window.location.href = "https://t4uzb.weebly.com/dars.html"; } catch(e){}
     });
 
@@ -318,7 +317,7 @@
     if (el) el.scrollIntoView({ behavior:'smooth', block:'start' });
   });
 
-  // Menyuga qaytish → go to kurslar.html
+  // Kurslarga qaytish → go to kurslar.html
   $('#backBtn').addEventListener('click', function(){
     try { window.location.href = "https://t4uzb.weebly.com/kurslar.html"; } catch(e){}
   });
